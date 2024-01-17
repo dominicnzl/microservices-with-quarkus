@@ -9,12 +9,16 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
 import java.time.Instant;
 
 @Path("/api/books")
 public class BookResource {
+
+    @RestClient
+    NumberProxy numberProxy;
 
     @Inject
     Logger logger;
@@ -32,12 +36,13 @@ public class BookResource {
             @FormParam("year") int yearOfPublication,
             @FormParam("genre") String genre) {
         Book book = new Book();
-        book.isbn13 = "13-We will get this later";
+        book.isbn13 = numberProxy.generateIsbnNumbers().isbn13;
         book.title = title;
         book.author = author;
         book.yearOfPublication = yearOfPublication;
         book.genre = genre;
         book.creationDate = Instant.now();
         logger.info("Book created: " + book);
-        return Response.status(201).entity(book).build(); }
+        return Response.status(201).entity(book).build();
+    }
 }
